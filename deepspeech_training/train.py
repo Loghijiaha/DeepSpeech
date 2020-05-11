@@ -747,7 +747,7 @@ def export():
 
     inputs, outputs, _ = create_inference_graph(batch_size=FLAGS.export_batch_size, n_steps=FLAGS.n_steps, tflite=FLAGS.export_tflite)
 
-    graph_version = int(file_relative_read('GRAPH_VERSION').strip())
+    graph_version = 1
     assert graph_version > 0
 
     outputs['metadata_version'] = tf.constant([graph_version], name='metadata_version')

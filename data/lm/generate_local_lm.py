@@ -11,7 +11,7 @@ from urllib import request
 def main():
 
   with tempfile.TemporaryDirectory() as tmp:
-    data_upper = '/content/DeepSpeech-Indo/data/lm/output'
+    data_upper = '/content/DeepSpeech/data/lm/output'
     
 
     # Convert to lowercase and count word occurences.
@@ -26,7 +26,7 @@ def main():
           lower.write(line_lower)
 
     # Build pruned LM.
-    lm_path = '/content/DeepSpeech-Indo/data/lm/lm.arpa'
+    lm_path = '/content/DeepSpeech/data/lm/lm.arpa'
     print('Creating ARPA file...')
     subprocess.check_call([
       '/content/bin/lmplz', '--order', '5',
@@ -38,7 +38,7 @@ def main():
     ])
 
     vocab_str = '\n'.join(word for word, count in counter.most_common(1197913))
-    with open('/content/DeepSpeech-Indo/data/lm/vocabulary.txt', 'w') as fout:
+    with open('/content/DeepSpeech/data/lm/vocabulary.txt', 'w') as fout:
      	
       fout.write(vocab_str)
 
@@ -55,7 +55,7 @@ def main():
                       '-v',
                       'trie',
                       filtered_path,
-                      '/content/DeepSpeech-Indo/data/lm/lm.binary'
+                      '/content/DeepSpeech/data/lm/lm.binary'
     ])
 
 if __name__ == '__main__':

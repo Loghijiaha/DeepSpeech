@@ -197,7 +197,7 @@ def create_flags():
                          message='The file pointed to by --alphabet_config_path must exist and be readable.')
 
     f.register_validator('one_shot_infer',
-                         lambda value: not value or os.path.isfile(value),
-                         message='The file pointed to by --one_shot_infer must exist and be readable.')
+                         lambda value: not value or os.path.isdir(value),
+                         message='The folder pointed to by --one_shot_infer must exist and contains .wav files.')
 
 # sphinx-doc: training_ref_flags_end

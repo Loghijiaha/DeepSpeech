@@ -844,44 +844,51 @@ def package_zip():
     log_info('Exported packaged model {}'.format(archive))
 
 
-def do_single_file_inference(input_file_path):
+def do_single_file_inference(source):
     with tfv1.Session(config=Config.session_config) as session:
         inputs, outputs, _ = create_inference_graph(batch_size=1, n_steps=-1)
 
         # Restore variables from training checkpoint
         load_graph_for_evaluation(session)
 
-        features, features_len = audiofile_to_features(input_file_path)
-        previous_state_c = np.zeros([1, Config.n_cell_dim])
-        previous_state_h = np.zeros([1, Config.n_cell_dim])
+        # matches = []
+        for root, dirnames, filenames in os.walk(source):
+            for input_file_path in filenames:
+                if input_file_path.endswith(('.wav')):
+                  print(input_file_path)
+                  # matches.append(os.path.join(root, filename))
+                  features, features_len = audiofile_to_features('/content/DeepSpeech/data/ta/clips/'+input_file_path)
+                  previous_state_c = np.zeros([1, Config.n_cell_dim])
+                  previous_state_h = np.zeros([1, Config.n_cell_dim])
 
-        # Add batch dimension
-        features = tf.expand_dims(features, 0)
-        features_len = tf.expand_dims(features_len, 0)
+                  # Add batch dimension
+                  features = tf.expand_dims(features, 0)
+                  features_len = tf.expand_dims(features_len, 0)
 
-        # Evaluate
-        features = create_overlapping_windows(features).eval(session=session)
-        features_len = features_len.eval(session=session)
+                  # Evaluate
+                  features = create_overlapping_windows(features).eval(session=session)
+                  features_len = features_len.eval(session=session)
 
-        logits = outputs['outputs'].eval(feed_dict={
-            inputs['input']: features,
-            inputs['input_lengths']: features_len,
-            inputs['previous_state_c']: previous_state_c,
-            inputs['previous_state_h']: previous_state_h,
-        }, session=session)
+                  logits = outputs['outputs'].eval(feed_dict={
+                      inputs['input']: features,
+                      inputs['input_lengths']: features_len,
+                      inputs['previous_state_c']: previous_state_c,
+                      inputs['previous_state_h']: previous_state_h,
+                  }, session=session)
 
-        logits = np.squeeze(logits)
+                  logits = np.squeeze(logits)
 
-        if FLAGS.scorer_path:
-            scorer = Scorer(FLAGS.lm_alpha, FLAGS.lm_beta,
-                            FLAGS.scorer_path, Config.alphabet)
-        else:
-            scorer = None
-        decoded = ctc_beam_search_decoder(logits, Config.alphabet, FLAGS.beam_width,
-                                          scorer=scorer, cutoff_prob=FLAGS.cutoff_prob,
-                                          cutoff_top_n=FLAGS.cutoff_top_n)
-        # Print highest probability result
-        print(decoded[0][1])
+                  if FLAGS.scorer_path:
+                      scorer = Scorer(FLAGS.lm_alpha, FLAGS.lm_beta,
+                                      FLAGS.scorer_path, Config.alphabet)
+                  else:
+                      scorer = None
+                  decoded = ctc_beam_search_decoder(logits, Config.alphabet, FLAGS.beam_width,
+                                                    scorer=scorer, cutoff_prob=FLAGS.cutoff_prob,
+                                                    cutoff_top_n=FLAGS.cutoff_top_n)
+                  # Print highest probability result
+                  print(decoded[0][1])
+
 
 
 def early_training_checks():

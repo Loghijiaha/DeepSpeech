@@ -17,6 +17,7 @@ import shutil
 import tensorflow as tf
 import tensorflow.compat.v1 as tfv1
 import time
+import pandas as pd
 
 tfv1.logging.set_verbosity({
     '0': tfv1.logging.DEBUG,

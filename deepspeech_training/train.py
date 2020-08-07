@@ -896,8 +896,7 @@ def do_single_file_inference(source):
               output_features.append(logits)
     output = np.array(output_features)
     np.save('/content/DeepSpeech/data/ds_decode_tamil data_v2_padded.npy', output)
-    print(output)
-
+    
 def early_training_checks():
     # Check for proper scorer early
     if FLAGS.scorer_path:

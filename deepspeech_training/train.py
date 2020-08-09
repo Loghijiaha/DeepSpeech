@@ -854,14 +854,14 @@ def do_single_file_inference(source):
         load_graph_for_evaluation(session)
 
         # matches = []
-        data = pd.read_csv('/content/decode_data/Tamil_Dataset/Tamil_Data.csv')
+        data = pd.read_csv(source + '/Tamil_Data.csv')
         filenames = data['audio_file']
         print(filenames)
         bar = progressbar.ProgressBar()
         for input_file_path in bar(filenames):
             if input_file_path.endswith(('.wav')):
               # matches.append(os.path.join(root, filename))
-              features, features_len = audiofile_to_features('/content/decode_data/Tamil_Dataset/audio_files/'+input_file_path)
+              features, features_len = audiofile_to_features(source +'/audio_files/'+input_file_path)
               previous_state_c = np.zeros([1, Config.n_cell_dim])
               previous_state_h = np.zeros([1, Config.n_cell_dim])
 
